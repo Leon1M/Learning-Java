@@ -1,0 +1,50 @@
+using System;
+
+class HillCipher
+{
+    private static readonly int KEY_LENGTH = 4;
+    private static readonly int MOD = 26; // modular arithmetic constant
+
+    // Encrypts a plaintext message using the Hill cipher with a 2 x 2 key matrix
+    static void Main(string[] args)
+    {
+        Console.Write("Enter the plaintext message: ");
+        string plaintext = Console.ReadLine().ToLower().Replace(" ", "");
+        Console.Write("Enter the key string: ");
+        string keyString = Console.ReadLine().ToLower().Replace(" ", "");
+
+        // Pad the plaintext message with 'x' if its length is odd
+        if (plaintext.Length % 2 == 1)
+        {
+            plaintext += 'x';
+        }
+
+        // Convert the key string to a key array
+        int[] key = new int[KEY_LENGTH];
+        for (int i = 0; i < KEY_LENGTH; i++)
+        {
+            key[i] = keyString[i] - 'a';
+        }
+
+        // Encrypt the plaintext message block by block
+        string ciphertext = "";
+        for (int i = 0; i < plaintext.Length; i += 2)
+        {
+            // Convert the plaintext block to a key array
+            int[] plaintextBlock = {plaintext[i] - 'a', plaintext[i+1] - 'a'};
+
+            // Calculate the ciphertext block using the key array
+            int[] ciphertextBlock = new int[2];
+            ciphertextBlock[0] = (key[0] * plaintextBlock[0] + key[1] * plaintextBlock[1]) % MOD;
+            ciphertextBlock[1] = (key[2] * plaintextBlock[0] + key[3] * plaintextBlock[1]) % MOD;
+
+            // Convert the ciphertext block back to letters and append to ciphertext
+            char x1encchar = (char)(ciphertextBlock[0] + 'a');
+            char x2encchar = (char)(ciphertextBlock[1] + 'a');
+            ciphertext += "" + x1encchar + x2encchar;
+        }
+
+        // Print the encrypted message
+        Console.WriteLine("Encrypted message: " + ciphertext);
+    }
+}
