@@ -1,0 +1,64 @@
+using System;
+
+class HillCipher
+{
+    private static readonly int KEY_LENGTH = 4;
+    private static readonly int MOD = 26; // modular arithmetic constant
+
+    // Encrypts a plaintext message using the Hill cipher with a 2 x 2 key matrix
+    static void Main(string[] args)
+    {
+        Console.Write("Enter the ciphertext message: ");
+        string ciphertext = Console.ReadLine().ToLower().Replace(" ", "");
+        Console.Write("Enter the key string: ");
+        string keyString = Console.ReadLine().ToLower().Replace(" ", "");
+
+        // Calculate the inverse key
+        int[] key = new int[KEY_LENGTH];
+        for (int i = 0; i < KEY_LENGTH; i++)
+        {
+            key[i] = keyString[i] - 'a';
+        }
+        int det = key[0] * key[3] - key[1] * key[2];
+        int invDet = 0;
+        for (int i = 0; i < MOD; i++)
+        {
+            if ((det * i) % MOD == 1)
+            {
+                invDet = i;
+                break;
+            }
+        }
+        if (invDet == 0)
+        {
+            Console.WriteLine("Error: Key is not invertible");
+            return;
+        }
+        int[] invKey = new int[KEY_LENGTH];
+        invKey[0] = (invDet * key[3]) % MOD;
+        invKey[1] = (-invDet * key[1] + MOD) % MOD;
+        invKey[2] = (-invDet * key[2] + MOD) % MOD;
+        invKey[3] = (invDet * key[0]) % MOD;
+
+        // Decrypt the ciphertext message block by block
+        string plaintext = "";
+        for (int i = 0; i < ciphertext.Length; i += 2)
+        {
+            // Convert the ciphertext block to a key array
+            int[] ciphertextBlock = {ciphertext[i] - 'a', ciphertext[i+1] - 'a'};
+
+            // Calculate the plaintext block using the inverse key array
+            int[] plaintextBlock = new int[2];
+            plaintextBlock[0] = (invKey[0] * ciphertextBlock[0] + invKey[1] * ciphertextBlock[1]) % MOD;
+            plaintextBlock[1] = (invKey[2] * ciphertextBlock[0] + invKey[3] * ciphertextBlock[1]) % MOD;
+
+            // Convert the plaintext block back to letters and append to plaintext
+            char x1decchar = (char)(plaintextBlock[0] + 'a');
+            char x2decchar = (char)(plaintextBlock[1] + 'a');
+            plaintext += "" + x1decchar + x2decchar;
+        }
+
+        // Print the decrypted message
+        Console.WriteLine("Decrypted message: " + plaintext);
+    }
+}
