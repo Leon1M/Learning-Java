@@ -1,0 +1,47 @@
+import java.util.Scanner;
+
+public class HillCipher {
+    private static final int KEY_LENGTH = 4;
+    private static final int MOD = 26; // modular arithmetic constant
+    
+    // Encrypts a plaintext message using the Hill cipher with a 2 x 2 key matrix
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter the plaintext message: ");
+        String plaintext = sc.nextLine().toLowerCase().replaceAll("\\s+","");
+        System.out.print("Enter the key string: ");
+        String keyString = sc.nextLine().toLowerCase().replaceAll("\\s+","");
+        sc.close();
+        
+        // Pad the plaintext message with 'x' if its length is odd
+        if (plaintext.length() % 2 == 1) {
+            plaintext += 'x';
+        }
+        
+        // Convert the key string to a key array
+        int[] key = new int[KEY_LENGTH];
+        for (int i = 0; i < KEY_LENGTH; i++) {
+            key[i] = keyString.charAt(i) - 'a';
+        }
+        
+        // Encrypt the plaintext message block by block
+        StringBuilder ciphertext = new StringBuilder();
+        for (int i = 0; i < plaintext.length(); i += 2) {
+            // Convert the plaintext block to a key array
+            int[] plaintextBlock = {plaintext.charAt(i) - 'a', plaintext.charAt(i+1) - 'a'};
+            
+            // Calculate the ciphertext block using the key array
+            int[] ciphertextBlock = new int[2];
+            ciphertextBlock[0] = (key[0] * plaintextBlock[0] + key[1] * plaintextBlock[1]) % MOD;
+            ciphertextBlock[1] = (key[2] * plaintextBlock[0] + key[3] * plaintextBlock[1]) % MOD;
+            
+            // Convert the ciphertext block back to letters and append to ciphertext
+            char x1encchar = (char)(ciphertextBlock[0] + 'a');
+            char x2encchar = (char)(ciphertextBlock[1] + 'a');
+            ciphertext.append(x1encchar).append(x2encchar);
+        }
+        
+        // Print the encrypted message
+        System.out.println("Encrypted message: " + ciphertext);
+    }
+}
